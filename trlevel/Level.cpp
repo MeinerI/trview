@@ -1,4 +1,5 @@
 #include "Level.h"
+#include "LevelEncryptedException.h"
 #include "LevelLoadException.h"
 #include <fstream>
 #include <iostream>
@@ -274,7 +275,14 @@ namespace trlevel
             file.exceptions(std::ifstream::failbit | std::ifstream::badbit | std::ifstream::eofbit);
             file.open(converted.c_str(), std::ios::binary);
 
-            _version = convert_level_version(read<uint32_t>(file));
+            uint32_t version_number = read<uint32_t>(file);
+            _version = convert_level_version(version_number);
+
+            if (_version == LevelVersion::Tomb4 && version_number == 0x63345254)
+            {
+                throw LevelEncryptedException();
+            }
+
             if (is_tr5(_version, converted))
             {
                 _version = LevelVersion::Tomb5;

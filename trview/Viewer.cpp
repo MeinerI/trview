@@ -8,6 +8,7 @@
 #include <directxmath.h>
 
 #include <trlevel/trlevel.h>
+#include <trlevel/LevelEncryptedException.h>
 #include <trview.graphics/ShaderStorage.h>
 #include <trview.graphics/FontFactory.h>
 #include <trview.graphics/DeviceWindow.h>
@@ -569,6 +570,11 @@ namespace trview
         try
         {
             new_level = trlevel::load_level(filename);
+        }
+        catch (trlevel::LevelEncryptedException)
+        {
+            MessageBox(_window.window(), L"Failed to load level - level is encrypted", L"Error", MB_OK);
+            return;
         }
         catch(...)
         {
